@@ -1,4 +1,4 @@
-name: React CI/CD Deploy
+name: Deploy React via SFTP
 
 on:
   push:
@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
       - name: Checkout Code
@@ -22,14 +21,15 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Build React App
+      - name: Build Project
         run: npm run build
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Upload files via SFTP
+        uses: appleboy/scp-action@v0.1.7
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: /public_html/test/
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: 22
+          source: "dist/*"
+          target: "public_html/test/"
